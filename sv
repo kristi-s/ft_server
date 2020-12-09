@@ -32,42 +32,32 @@ WORKDIR /var/www/droslyn
 RUN		wget https://wordpress.org/latest.tar.gz && \
 		tar -xf latest.tar.gz && rm -f latest.tar.gz && \
 		rm -f wordpress/wp-config.php
-COPY	/srcs/wp-config.php wordpress/wp-config.php
+COPY	/srcs/wp-config.php wordpress
 RUN		chown -R www-data:www-data wordpress && \
 		chmod 755 -R wordpress && \
 		chmod 644 wordpress
 
-# RUN		mkdir -p /var/lib/phpmyadmin/tmp && \
-# 		mkdir /usr/share/phpmyadmin && \
-		# chown -R www-data:www-data /var/lib/phpmyadmin && \
-		# wget https://files.phpmyadmin.net/phpMyAdmin/5.0.4/phpMyAdmin-5.0.4-all-languages.tar.gz && \
-		# tar -xf phpMyAdmin-5.0.4-all-languages.tar.gz -C /usr/share/phpmyadmin --strip-components 1 && \
-		# rm -f phpMyAdmin-5.0.4-all-languages.tar.gz
-
-WORKDIR /var/www
-RUN		wget https://files.phpmyadmin.net/phpMyAdmin/5.0.4/phpMyAdmin-5.0.4-all-languages.tar.gz && \
-		tar -xzvf phpMyAdmin-5.0.4-all-languages.tar.gz && \
-		mv phpMyAdmin-5.0.4-all-languages /var/www/droslyn/phpmyadmin
-WORKDIR /var/www/droslyn
+RUN		mkdir -p /var/lib/phpmyadmin/tmp && \
+		mkdir /usr/share/phpmyadmin && \
+		chown -R www-data:www-data /var/lib/phpmyadmin && \
+		wget https://files.phpmyadmin.net/phpMyAdmin/5.0.4/phpMyAdmin-5.0.4-all-languages.tar.gz && \
+		tar -xf phpMyAdmin-5.0.4-all-languages.tar.gz -C /usr/share/phpmyadmin --strip-components 1 && \
+		rm -f phpMyAdmin-5.0.4-all-languages.tar.gz
 COPY	/srcs/config.inc.php /var/www/droslyn/phpmyadmin
 # необходимо заменить файл с конфигурациями по адресу /etc/nginx/sites-available/....com
 # после этого, для активации нового серверного блока создаем символическую ссылку на новый файл
 #конфигурации серверного блока
 
-COPY	/srcs/nginx.conf /etc/nginx/sites-available/droslyn
-RUN		ln -s /etc/nginx/sites-available/droslyn /etc/nginx/sites-enabled/ && \
-		rm -f /etc/nginx/sites-enabled/default && \
-		openssl req -x509 -nodes -days 365 -newkey rsa:2048 \
+COPY	/srcs/nginx.conf /etc/nginx/sites-available/nginx.conf
+
+RUN		ln -s /etc/nginx/sites-available/nginx.conf /etc/nginx/sites-enabled/
+
+RUN		unlink /etc/nginx/sites-enabled/default
+		# rm -f /etc/nginx/sites-enabled/default
+
+RUN		openssl req -x509 -nodes -days 365 -newkey rsa:2048 \
 		-subj "/C=ru/ST=Moscow/L=Moscow/O=no/OU=no/CN=droslyn" \
 		-keyout /etc/ssl/private/nginx-selfsigned.key -out /etc/ssl/certs/nginx-selfsigned.crt
-
-RUN service mysql start \
-    && mysql -u root \
-	&& mysql --execute="CREATE DATABASE wp_base; \
-						GRANT ALL PRIVILEGES ON wp_base.* TO 'root'@'localhost'; \
-						FLUSH PRIVILEGES; \
-						UPDATE mysql.user SET plugin = 'mysql_native_password' WHERE user='root';"
-
 COPY	/srcs/start.sh .
 
 	
@@ -77,4 +67,12 @@ COPY	/srcs/start.sh .
 EXPOSE	80 443
 
 # можно использовать только одну CMD, остальные будут проигнорированы
-CMD sh start.sh
+CMD bash start.sh
+
+
+
+
+
+
+
+192.168.99.102
