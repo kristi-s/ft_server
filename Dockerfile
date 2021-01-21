@@ -1,6 +1,6 @@
 FROM	debian:buster
 
-RUN 	apt-get update && apt-get upgrade -y && apt-get install -y wget gettext-base &&\
+RUN 	apt-get update && apt-get -y upgrade && apt-get install -y wget &&\
 		apt-get install -y nginx && \
 		apt-get install -y mariadb-server
 
@@ -11,9 +11,7 @@ RUN		wget https://wordpress.org/latest.tar.gz && \
 		tar -xf latest.tar.gz && rm -f latest.tar.gz 
 
 COPY	/srcs/wp-config.php wordpress
-RUN		chown -R www-data:www-data wordpress && \
- 		chmod 775 -R wordpress && \
- 		chmod 664 wordpress
+RUN		chown -R www-data:www-data wordpress
 
 WORKDIR /var/www
 RUN		wget https://files.phpmyadmin.net/phpMyAdmin/5.0.4/phpMyAdmin-5.0.4-all-languages.tar.gz && \
@@ -23,8 +21,10 @@ RUN		wget https://files.phpmyadmin.net/phpMyAdmin/5.0.4/phpMyAdmin-5.0.4-all-lan
 
 WORKDIR /var/www/droslyn
 COPY	/srcs/config.inc.php /var/www/droslyn/phpmyadmin
+COPY	/srcs/autoindex_change.sh /var/www/droslyn
 
-COPY	/srcs/nginx.conf /etc/nginx/sites-available/droslyn
+COPY	/srcs/droslyn /etc/nginx/sites-available/droslyn
+COPY	/srcs/copy /etc/nginx/file
 RUN		ln -s /etc/nginx/sites-available/droslyn /etc/nginx/sites-enabled/ && \
 		rm -f /etc/nginx/sites-enabled/default && \
 		openssl req -x509 -nodes -days 365 -newkey rsa:2048 \

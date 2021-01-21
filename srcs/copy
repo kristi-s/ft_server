@@ -1,0 +1,41 @@
+server {
+		listen 80;
+		listen [::]:80;
+		index index.php index.html index.htm index.nginx-debian.html;
+		server_name	localhost;
+		
+		
+		location / {
+				autoindex off;
+				try_files $uri $uri/ =404;	
+		}	
+	
+		location ~ \.php$ {
+				include snippets/fastcgi-php.conf;
+				fastcgi_pass unix:/var/run/php/php7.3-fpm.sock;	
+		}
+
+}
+server {
+		listen 443 ssl;
+		listen [::]:443 ssl;
+		index index.php index.html index.htm index.nginx-debian.html;
+		server_name	localhost;
+		root /var/www/droslyn;
+		
+		ssl on;
+		ssl_certificate /etc/ssl/certs/nginx-selfsigned.crt;
+		ssl_certificate_key /etc/ssl/private/nginx-selfsigned.key;
+		
+		location / {
+				autoindex off;
+				try_files $uri $uri/ =404;	
+		}	
+	
+		location ~ \.php$ {
+				include snippets/fastcgi-php.conf;
+				fastcgi_pass unix:/var/run/php/php7.3-fpm.sock;	
+		}
+
+}
+
