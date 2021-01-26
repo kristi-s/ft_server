@@ -1,6 +1,18 @@
+# **************************************************************************** #
+#                                                                              #
+#                                                         :::      ::::::::    #
+#    Dockerfile                                         :+:      :+:    :+:    #
+#                                                     +:+ +:+         +:+      #
+#    By: droslyn <marvin@42.fr>                     +#+  +:+       +#+         #
+#                                                 +#+#+#+#+#+   +#+            #
+#    Created: 2021/01/26 15:33:26 by droslyn           #+#    #+#              #
+#    Updated: 2021/01/26 15:39:22 by droslyn          ###   ########.fr        #
+#                                                                              #
+# **************************************************************************** #
+
 FROM	debian:buster
 
-RUN 	apt-get update && apt-get -y upgrade && apt-get install -y wget &&\
+RUN 	apt-get update && apt-get -y upgrade && apt-get install -y wget && \
 		apt-get install -y nginx && \
 		apt-get install -y mariadb-server
 

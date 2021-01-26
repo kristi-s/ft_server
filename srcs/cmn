@@ -1,0 +1,1 @@
+docker run --name qwerty -d -p 80:80 -p 443:443 serv sleep infinity && docker exec qwerty sh start.sh
